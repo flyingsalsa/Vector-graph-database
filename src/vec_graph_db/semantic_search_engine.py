@@ -113,3 +113,88 @@ results = search_engine.search(query, top_k=3)
 print(f"\nQuery: {query}")
 for i, result in enumerate(results):
     print(f"Result {i+1}: {result['text']} (Score: {result['score']:.4f})")
+
+# Interactive search terminal
+def enhanced_interactive_search():
+    """Enhanced interactive search with additional features"""
+    print("=== Enhanced Interactive Search Terminal ===")
+    print("Commands:")
+    print("  - Enter any text to search")
+    print("  - 'help' or 'h' for this help message")
+    print("  - 'settings' or 's' to change search parameters")
+    print("  - 'history' to view search history")
+    print("  - 'quit', 'exit', or 'q' to stop")
+    print("  - Ctrl+C to interrupt\n")
+    
+    search_history = []
+    top_k = 3
+    
+    while True:
+        try:
+            query = input("Search> ").strip()
+            
+            if query.lower() in ['quit', 'exit', 'q']:
+                print("Goodbye!")
+                break
+            elif query.lower() in ['help', 'h']:
+                print("\nAvailable commands:")
+                print("  help/h - Show this help")
+                print("  settings/s - Change search parameters")
+                print("  history - Show search history")
+                print("  quit/exit/q - Exit program")
+                continue
+            elif query.lower() in ['settings', 's']:
+                try:
+                    new_k = input(f"Enter number of results (current: {top_k}): ").strip()
+                    if new_k.isdigit():
+                        top_k = int(new_k)
+                        print(f"Updated to show {top_k} results")
+                    else:
+                        print("Invalid number, keeping current setting")
+                except:
+                    print("Invalid input, keeping current setting")
+                continue
+            elif query.lower() == 'history':
+                if search_history:
+                    print("\nSearch History:")
+                    for i, hist_query in enumerate(search_history[-10:], 1):  # Show last 10
+                        print(f"  {i}. {hist_query}")
+                else:
+                    print("No search history yet")
+                continue
+            elif query == '':
+                continue
+            
+            # Add to history
+            search_history.append(query)
+            
+            print(f"\nSearching for: '{query}'...")
+            
+            # Perform search
+            results = search_engine.search(query, top_k=top_k)
+            
+            # Display results with better formatting
+            print(f"\n{'='*60}")
+            print(f"Results for: {query}")
+            print(f"{'='*60}")
+            
+            if not results:
+                print("No results found.")
+            else:
+                for i, result in enumerate(results, 1):
+                    print(f"\n[Result {i}] (Score: {result['score']:.4f})")
+                    print(f"{result['text']}")
+                    if i < len(results):
+                        print("-" * 40)
+            
+            print(f"\n{'='*60}\n")
+            
+        except KeyboardInterrupt:
+            print("\n\nSearch interrupted. Goodbye!")
+            break
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
+
+if __name__ == "__main__":
+    enhanced_interactive_search()
