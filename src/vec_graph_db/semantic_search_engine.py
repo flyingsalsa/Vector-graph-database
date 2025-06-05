@@ -1,4 +1,5 @@
 from sentence_transformers import SentenceTransformer
+import numpy as np
 from pymilvus import (
     connections,
     utility,
@@ -136,7 +137,9 @@ def enhanced_interactive_search():
     print("  - 'quit', 'exit', or 'q' to stop")
     print("  - Ctrl+C to interrupt\n")
     
-    search_history = []
+    search_history = np.empty(10, dtype=object)
+    is_empty = True
+    curr = 0
     top_k = 3
     
     while True:
@@ -165,10 +168,13 @@ def enhanced_interactive_search():
                     print("Invalid input, keeping current setting")
                 continue
             elif query.lower() == 'history':
-                if search_history:
+                if not is_empty:
                     print("\nSearch History:")
-                    for i, hist_query in enumerate(search_history[-10:], 1):  # Show last 10
-                        print(f"  {i}. {hist_query}")
+                    for i  in range(10):  # Show last 10
+                        hist = search_history[(curr + i) % 10]
+                        if hist == None:
+                            break
+                        print(f"  {i}. {hist}")
                 else:
                     print("No search history yet")
                 continue
@@ -176,7 +182,10 @@ def enhanced_interactive_search():
                 continue
             
             # Add to history
-            search_history.append(query)
+            search_history[curr] = query
+            # Update current index
+            curr = (curr + 1) % 10
+            is_empty = False
             
             print(f"\nSearching for: '{query}'...")
             
