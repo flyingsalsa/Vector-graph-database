@@ -31,6 +31,10 @@ class KnowledgeGraph:
         result = self.run_query(query, {"props": props})
         return result[0]['e']
     
+    # Older version of create_relationship (deprecated)
+    # This method uses Neo4j's internal id() function, 
+    # which is not recommended for long-term use.
+    
     def create_relationship(self, from_entity, rel_type, to_entity, properties=None):
         props = properties or {}
         
@@ -41,12 +45,29 @@ class KnowledgeGraph:
         RETURN r
         """
         result = self.run_query(query, {
-            "from_id": from_entity.uuid,
-            "to_id": to_entity.uuid,
+            "from_id": from_entity.id,
+            "to_id": to_entity.id,
             "props": props
         })
         return result[0]['r']
-    
+    '''
+    def create_relationship(self, from_entity_uuid, from_label, rel_type, to_entity_uuid, to_label, properties=None):
+        # ... (your new create_relationship method using UUIDs and labels) ...
+        props = properties or {}
+        query = f"""
+        MATCH (a:{from_label} {{uuid: $from_uuid}}), (b:{to_label} {{uuid: $to_uuid}})
+        CREATE (a)-[r:{rel_type} $props]->(b)
+        RETURN r
+        """
+        parameters = {
+            "from_uuid": from_entity_uuid,
+            "to_uuid": to_entity_uuid,
+            "props": props
+        }
+        result = self.run_query(query, parameters)
+        if result and len(result) > 0 and 'r' in result[0]:
+            return result[0]['r']
+    '''
     def get_entity_by_name(self, entity_type, name):
         query = f"""
         MATCH (e:{entity_type} {{name: $name}})
