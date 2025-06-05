@@ -139,7 +139,7 @@ def enhanced_interactive_search():
     
     search_history = np.empty(10, dtype=object)
     is_empty = True
-    curr = 0
+    curr = -1
     top_k = 3
     
     while True:
@@ -168,24 +168,25 @@ def enhanced_interactive_search():
                     print("Invalid input, keeping current setting")
                 continue
             elif query.lower() == 'history':
-                if not is_empty:
+                if curr >=0:
                     print("\nSearch History:")
-                    for i  in range(10):  # Show last 10
-                        hist = search_history[(curr + i) % 10]
+                    for i in range(10):  # Show last 10
+                        hist = search_history[(curr - i) % 10]
                         if hist == None:
                             break
-                        print(f"  {i}. {hist}")
+                        k = i+1
+                        print(f"  {(k)}. {hist}")
                 else:
                     print("No search history yet")
                 continue
             elif query == '':
                 continue
             
-            # Add to history
-            search_history[curr] = query
             # Update current index
             curr = (curr + 1) % 10
-            is_empty = False
+            # Add to history
+            search_history[curr] = query
+
             
             print(f"\nSearching for: '{query}'...")
             
