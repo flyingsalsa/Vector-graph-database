@@ -11,7 +11,8 @@ dependencies = [
     "pymilvus (>=2.5.10,<3.0.0)",
     "sentence-transformers (>=4.1.0,<5.0.0)",
     "numpy (>=2.2.6,<3.0.0)",
-    "pandas (>=2.2.3,<3.0.0)"
+    "pandas (>=2.2.3,<3.0.0)",
+    "neo4j (>=5.28.1,<6.0.0)"
 ]
 
 [tool.poetry]
