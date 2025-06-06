@@ -40,34 +40,17 @@ class KnowledgeGraph:
         
         query = f"""
         MATCH (a), (b)
-        WHERE id(a) = $from_id AND id(b) = $to_id
+        WHERE a.uuid = $from_id AND b.uuid = $to_id
         CREATE (a)-[r:{rel_type} $props]->(b)
         RETURN r
         """
         result = self.run_query(query, {
-            "from_id": from_entity.id,
-            "to_id": to_entity.id,
+            "from_id": from_entity["uuid"],
+            "to_id": to_entity["uuid"],
             "props": props
         })
         return result[0]['r']
-    '''
-    def create_relationship(self, from_entity_uuid, from_label, rel_type, to_entity_uuid, to_label, properties=None):
-        # ... (your new create_relationship method using UUIDs and labels) ...
-        props = properties or {}
-        query = f"""
-        MATCH (a:{from_label} {{uuid: $from_uuid}}), (b:{to_label} {{uuid: $to_uuid}})
-        CREATE (a)-[r:{rel_type} $props]->(b)
-        RETURN r
-        """
-        parameters = {
-            "from_uuid": from_entity_uuid,
-            "to_uuid": to_entity_uuid,
-            "props": props
-        }
-        result = self.run_query(query, parameters)
-        if result and len(result) > 0 and 'r' in result[0]:
-            return result[0]['r']
-    '''
+    
     def get_entity_by_name(self, entity_type, name):
         query = f"""
         MATCH (e:{entity_type} {{name: $name}})
@@ -76,15 +59,15 @@ class KnowledgeGraph:
         result = self.run_query(query, {"name": name})
         return result[0]['e'] if result else None
     
-    def get_related_entities(self, entity_id, relationship_type=None):
+    def get_related_entities(self, entity, relationship_type=None):
         rel_clause = f"[r:{relationship_type}]" if relationship_type else "[r]"
         
         query = f"""
         MATCH (a)-{rel_clause}->(b)
-        WHERE id(a) = $entity_id
+        WHERE a.uuid = $entity_id
         RETURN b, type(r) as relationship_type, properties(r) as rel_properties
         """
-        return self.run_query(query, {"entity_id": entity_id})
+        return self.run_query(query, {"entity_id": entity["uuid"]})
     
     def find_path_between_entities(self, from_name, from_type, to_name, to_type, max_depth=3):
         query = f"""
