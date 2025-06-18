@@ -93,7 +93,7 @@ pip install pymilvus neo4j sentence-transformers numpy pandas
 
 ## Notebooks
 
-See [vector_graph_databases.ipynb](vector_graph_databases.ipynb) for a comprehensive, step-by-step guide with code and explanations.
+WIP
 
 ---
 
